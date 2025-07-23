@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Products</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">GP Shopping Mall</a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Categories List -->
+    <h3>Categories</h3>
+    <ul class="list-inline mb-4">
+        {% for category in categories %}
+            <li class="list-inline-item">
+                <a href="{% url 'category_products' category.id %}" class="btn btn-outline-secondary">{{ category.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- All Categories & Their Products -->
+    {% for category, products in category_products.items %}
+        <h4 class="mt-5">{{ category.name }}</h4>
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: contain;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            <p class="card-text">Price: ₹{{ product.price }}</p>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'place_order' product.id %}" class="btn btn-primary">Order Now</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-warning">Login to Order</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No products available in this category.</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
